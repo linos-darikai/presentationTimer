@@ -12,7 +12,7 @@ import com.linos.presentationTimer.services.TimerService;
 @RestController
 public class TimerController {
 
-    private TimerService timerService;
+    private final TimerService timerService;
 
     public TimerController(TimerService timerService){
         this.timerService = timerService;

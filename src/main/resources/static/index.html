@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Interface</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .Time {
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .actual-time span {
+            font-size: 48px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .pause-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            margin: 8px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .pause-button:hover {
+            background-color: #45a049;
+        }
+
+        .pause-button:nth-of-type(2) {
+            background-color: #f44336;
+        }
+
+        .pause-button:nth-of-type(2):hover {
+            background-color: #da190b;
+        }
+
+        .pause-button:nth-of-type(3) {
+            background-color: #ff9800;
+        }
+
+        .pause-button:nth-of-type(3):hover {
+            background-color: #e68a00;
+        }
+    </style>
+</head>
+<body>
+    <div class="Time">
+        <label class="actual-time">
+            <span>12 : 00</span>
+        </label>
+    </div>
+    <button class="pause-button">Start</button>
+    <button class="pause-button">Stop</button>
+    <button class="pause-button">Pause</button>
+</body>
+</html>

@@ -5,7 +5,7 @@ import java.util.UUID;
 public class Timer {
 
     //Time in minutes
-    private String id;
+    private final String id;
     private int presentationDuration;
     private int questionDuration;
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Presentation Timer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f9f9f9;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 40px 50px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    form label {
+      display: block;
+      margin: 20px 0 5px;
+      font-weight: 600;
+      color: #444;
+      text-align: left;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #timer-display {
+      font-size: 28px;
+      margin-top: 30px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #message-display {
+      color: #e53935;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Presentation Timer Setup</h2>
+    <form>
+      <label for="presentation-time">Presentation Time (minutes)</label>
+      <input type="number" id="presentation-time" name="presentation-time" min="0" placeholder="e.g. 10" required>
+
+      <label for="question-time">Question Time (minutes)</label>
+      <input type="number" id="question-time" name="question-time" min="0" placeholder="e.g. 5" required>
+
+      <button type="submit">Start Timer</button>
+      <p id="message-display">* Timer logic not available in this version</p>
+    </form>
+
+    <div id="timer-display">Timer: --:--</div>
+  </div>
+
+</body>
+</html>
