@@ -1,76 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer Interface</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f4f9;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .Time {
-            background-color: #fff;
-            padding: 20px 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .actual-time span {
-            font-size: 48px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .pause-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            margin: 8px;
-            border-radius: 12px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .pause-button:hover {
-            background-color: #45a049;
-        }
-
-        .pause-button:nth-of-type(2) {
-            background-color: #f44336;
-        }
-
-        .pause-button:nth-of-type(2):hover {
-            background-color: #da190b;
-        }
-
-        .pause-button:nth-of-type(3) {
-            background-color: #ff9800;
-        }
-
-        .pause-button:nth-of-type(3):hover {
-            background-color: #e68a00;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Timer Tester</title>
 </head>
 <body>
-    <div class="Time">
-        <label class="actual-time">
-            <span>12 : 00</span>
-        </label>
-    </div>
-    <button class="pause-button">Start</button>
-    <button class="pause-button">Stop</button>
-    <button class="pause-button">Pause</button>
-</body>
+    <h1 id="timerDisplay">00:00</h1>
+
+    <button id="createBtn">Create Timer</button>
+    <button id="startBtn" disabled>Start Timer</button>
+    <button id="stopBtn" disabled>Stop Timer</button>
+
+    <!-- Add these libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <script>
+    class TimerClient {
+        constructor(serverUrl) {
+            this.serverUrl = serverUrl; // e.g., "/timer-websocket"
+            this.stompClient = null;
+            this.timerId = null;
+        }
+
+        connect() {
+            const socket = new SockJS(this.serverUrl);
+            this.stompClient = Stomp.over(socket);
+
+            this.stompClient.connect({}, (frame) => {
+                console.log('✅ Connected to WebSocket:', frame);
+            }, (error) => {
+                console.error('❌ WebSocket connection error:', error);
+            });
+        }
+
+        subscribeToTimer(timerId, updateCallback) {
+                if (!this.stompClient || !this.stompClient.connected) {
+                    console.error('❌ WebSocket not connected. Call connect() first.');
+                    return;
+                }
+
+                const subscriptionPath = `/broadcast/timer/${timerId}`;
+                console.log(`🔔 Subscribing to ${subscriptionPath}`);
+
+                this.stompClient.subscribe(subscriptionPath, (message) => {
+                    const timeString = message.body;
+                    console.log(`⏰ Timer ${timerId} update: ${timeString}`);
+                    updateCallback(timeString);  // This updates the HTML display too
+                });
+            }
+
+
+        startTimer(timerId) {
+            if (!this.stompClient || !this.stompClient.connected) {
+                console.error('❌ WebSocket not connected. Call connect() first.');
+                return;
+            }
+            this.stompClient.send(`/app/start-timer/${timerId}`, {}, {});
+            console.log(`▶️ Start command sent for timer ${timerId}`);
+        }
+
+        stopTimer(timerId) {
+            if (!this.stompClient || !this.stompClient.connected) {
+                console.error('❌ WebSocket not connected. Call connect() first.');
+                return;
+            }
+            this.stompClient.send(`/app/stop-timer/${timerId}`, {}, {});
+            console.log(`⏹️ Stop command sent for timer ${timerId}`);
+        }
+
+        // Method to create a new timer using the REST API
+        createTimer() {
+            return fetch('/createTimer', {
+                method: 'POST',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data || !data.id) {
+                    throw new Error('Server response missing timer ID.');
+                }
+
+                console.log('✅ Timer created:', data);
+                this.timerId = data.id;
+
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = false;
+
+                // Subscribe to updates immediately after creating
+                this.subscribeToTimer(this.timerId, (timeString) => {
+                    document.getElementById('timerDisplay').textContent = timeString;
+                });
+            })
+            .catch(error => {
+                console.error('❌ Error creating timer:', error.message);
+            });
+        }
+
+
+    }
+
+    // Usage Example
+    const client = new TimerClient('/timer-websocket');
+    client.connect();
+
+    // Create a new timer when the "Create Timer" button is clicked
+    document.getElementById('createBtn').addEventListener('click', () => {
+        client.createTimer();
+    });
+
+    // Start the timer when the "Start Timer" button is clicked
+    document.getElementById('startBtn').addEventListener('click', () => {
+        if (client.timerId) {
+            client.startTimer(client.timerId);
+        }
+    });
+
+    // Stop the timer when the "Stop Timer" button is clicked
+    document.getElementById('stopBtn').addEventListener('click', () => {
+        if (client.timerId) {
+            client.stopTimer(client.timerId);
+        }
+    });
+    </script>
+
+    </body>
 </html>
